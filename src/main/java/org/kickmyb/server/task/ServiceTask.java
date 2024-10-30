@@ -14,6 +14,8 @@ public interface ServiceTask {
 
     // entity handling
     TaskDetailResponse detail(Long id, MUser user);
+
+    void softDeleteTask(long taskID, MUser user) throws Empty;
     void addOne(AddTaskRequest req, MUser user) throws Existing, Empty, TooShort;
     void updateProgress(long taskID, int value);
     List<HomeItemResponse> home(Long userID);

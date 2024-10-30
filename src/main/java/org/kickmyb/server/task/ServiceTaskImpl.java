@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Component
 @Transactional
@@ -51,6 +52,23 @@ public class ServiceTaskImpl implements ServiceTask {
         }
         return response;
     }
+
+    @Override
+    public void softDeleteTask(long taskID, MUser user) throws Empty, IllegalArgumentException  {
+        if (taskID < 0) throw new Empty();
+        MTask element = repo.findById(taskID).get();
+
+        if (!user.tasks.contains(element)){
+            throw new IllegalArgumentException();
+        }
+
+        element.isDeleted = true;
+
+        user.tasksSoftDeleted.add(element);
+        user.tasks.remove(element);
+        repoUser.save(user);
+    }
+
 
     // TODO oublier de valider pour une injection javascript
     // TODO Que se passe-t-il si ce n'est pas transactionnel ()

@@ -33,6 +33,15 @@ public class ControllerTask {
         return "";
     }
 
+    @PostMapping(value = "/api/softDelete/{taskID}")
+    public @ResponseBody String softDeleteTask(@RequestBody long taskId) throws ServiceTask.Empty {
+        System.out.println("KICKB SERVER : soft delete task : " + taskId);
+        ConfigHTTP.attenteArticifielle();
+        MUser user = currentUser();
+        serviceTask.softDeleteTask(taskId, user);
+        return "";
+    }
+
     @GetMapping(value = "/api/progress/{taskID}/{value}", produces = "text/plain")
     public @ResponseBody String updateProgress(@PathVariable long taskID, @PathVariable int value) {
         System.out.println("KICKB SERVER : Progress for task : " + taskID + " @" + value);

@@ -26,4 +26,7 @@ public class MUser {
     // ORM style storage.
     @OneToMany(fetch=FetchType.EAGER)
     public List<MTask> tasks = new ArrayList<>();
+
+    @OneToMany(fetch=FetchType.EAGER)
+    public List<MTask> tasksSoftDeleted = new ArrayList<>();
 }
