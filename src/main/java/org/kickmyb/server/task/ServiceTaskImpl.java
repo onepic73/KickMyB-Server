@@ -19,6 +19,8 @@ public class ServiceTaskImpl implements ServiceTask {
 
     @Autowired
     MUserRepository repoUser;
+
+
     @Autowired MTaskRepository repo;
     @Autowired MProgressEventRepository repoProgressEvent;
 
@@ -35,6 +37,10 @@ public class ServiceTaskImpl implements ServiceTask {
     public TaskDetailResponse detail(Long id, MUser user) {
         //MTask element = user.tasks.stream().filter(elt -> elt.id == id).findFirst().get();
         MTask element = repo.findById(id).get();
+        if (element.isDeleted){
+            throw new IllegalArgumentException();
+        }
+
         TaskDetailResponse response = new TaskDetailResponse();
         response.name = element.name;
         response.id = element.id;
@@ -67,6 +73,7 @@ public class ServiceTaskImpl implements ServiceTask {
         user.tasksSoftDeleted.add(element);
         user.tasks.remove(element);
         repoUser.save(user);
+        System.out.println("allo");
     }
 
 
@@ -174,6 +181,10 @@ public class ServiceTaskImpl implements ServiceTask {
     @Override
     public TaskDetailPhotoResponse detailPhoto(Long id, MUser user) {
         MTask element = user.tasks.stream().filter(elt -> elt.id == id).findFirst().get();
+        if (element.isDeleted){
+            throw new IllegalArgumentException();
+        }
+
         TaskDetailPhotoResponse response = new TaskDetailPhotoResponse();
         response.name = element.name;
         response.id = element.id;

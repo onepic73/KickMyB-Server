@@ -33,8 +33,8 @@ public class ControllerTask {
         return "";
     }
 
-    @PostMapping(value = "/api/softDelete/{taskID}")
-    public @ResponseBody String softDeleteTask(@RequestBody long taskId) throws ServiceTask.Empty {
+    @PostMapping(value = "/api/softDelete/{taskId}")
+    public @ResponseBody String softDeleteTask(@PathVariable long taskId) throws ServiceTask.Empty {
         System.out.println("KICKB SERVER : soft delete task : " + taskId);
         ConfigHTTP.attenteArticifielle();
         MUser user = currentUser();

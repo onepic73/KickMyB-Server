@@ -8,6 +8,7 @@ import org.kickmyb.server.account.BadCredentialsException;
 import org.kickmyb.server.account.MUser;
 import org.kickmyb.server.account.MUserRepository;
 import org.kickmyb.server.account.ServiceAccount;
+import org.kickmyb.server.task.MTaskRepository;
 import org.kickmyb.server.task.ServiceTask;
 import org.kickmyb.transfer.AddTaskRequest;
 import org.kickmyb.transfer.SignupRequest;
@@ -36,10 +37,34 @@ class ServiceTaskTests {
     @Autowired
     private MUserRepository userRepository;
     @Autowired
+    MTaskRepository repoTask;
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @Autowired
     private ServiceTask serviceTask;
+
+    @Test
+    void testSoftDelete() throws ServiceTask.Empty, ServiceTask.TooShort, ServiceTask.Existing {
+        MUser u = new MUser();
+        u.username = "M. Test";
+        u.password = passwordEncoder.encode("Passw0rd!");
+        userRepository.saveAndFlush(u);
+
+        AddTaskRequest atr = new AddTaskRequest();
+        atr.name = "Tâche de test";
+        atr.deadline = Date.from(new Date().toInstant().plusSeconds(3600));
+
+        serviceTask.addOne(atr, u);
+        Assertions.assertEquals(1, serviceTask.home(u.id).size());
+
+        long taskID = u.tasks.get(0).id;
+
+        serviceTask.softDeleteTask(taskID, u);
+        Assertions.assertEquals(0, u.tasks.size());
+        Assertions.assertEquals(1, u.tasksSoftDeleted.size());
+
+    }
 
     @Test
     void testAddTask() throws ServiceTask.Empty, ServiceTask.TooShort, ServiceTask.Existing {
@@ -58,7 +83,7 @@ class ServiceTaskTests {
     }
 
     @Test
-    void testAddTaskEmpty() throws ServiceTask.Empty, ServiceTask.TooShort, ServiceTask.Existing {
+    void testAddTaskEmpty() {
         MUser u = new MUser();
         u.username = "M. Test";
         u.password = passwordEncoder.encode("Passw0rd!");
@@ -77,7 +102,7 @@ class ServiceTaskTests {
     }
 
     @Test
-    void testAddTaskTooShort() throws ServiceTask.Empty, ServiceTask.TooShort, ServiceTask.Existing {
+    void testAddTaskTooShort() {
         MUser u = new MUser();
         u.username = "M. Test";
         u.password = passwordEncoder.encode("Passw0rd!");
@@ -96,7 +121,7 @@ class ServiceTaskTests {
     }
 
     @Test
-    void testAddTaskExisting() throws ServiceTask.Empty, ServiceTask.TooShort, ServiceTask.Existing {
+    void testAddTaskExisting() {
         MUser u = new MUser();
         u.username = "M. Test";
         u.password = passwordEncoder.encode("Passw0rd!");

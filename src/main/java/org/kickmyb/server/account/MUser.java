@@ -27,6 +27,6 @@ public class MUser {
     @OneToMany(fetch=FetchType.EAGER)
     public List<MTask> tasks = new ArrayList<>();
 
-    @OneToMany(fetch=FetchType.EAGER)
+    @OneToMany()
     public List<MTask> tasksSoftDeleted = new ArrayList<>();
 }
